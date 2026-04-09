@@ -7,4 +7,3 @@ import {
 export function createSnsClient(environment: AwsRuntimeConfig): SNSClient {
   return new SNSClient(createAwsClientConfig(environment));
 }
-

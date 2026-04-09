@@ -21,10 +21,7 @@ export function createAwsClientConfig(
     config.endpoint = environment.AWS_ENDPOINT_URL;
   }
 
-  if (
-    environment.AWS_ACCESS_KEY_ID &&
-    environment.AWS_SECRET_ACCESS_KEY
-  ) {
+  if (environment.AWS_ACCESS_KEY_ID && environment.AWS_SECRET_ACCESS_KEY) {
     config.credentials = {
       accessKeyId: environment.AWS_ACCESS_KEY_ID,
       secretAccessKey: environment.AWS_SECRET_ACCESS_KEY,
@@ -33,4 +30,3 @@ export function createAwsClientConfig(
 
   return config;
 }
-

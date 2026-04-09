@@ -7,4 +7,3 @@ import {
 export function createSqsClient(environment: AwsRuntimeConfig): SQSClient {
   return new SQSClient(createAwsClientConfig(environment));
 }
-
