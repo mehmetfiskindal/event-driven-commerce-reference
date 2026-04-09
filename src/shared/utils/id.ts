@@ -5,4 +5,3 @@ export function createPrefixedId(prefix: string): string {
 
   return `${prefix}-${suffix}`;
 }
-
