@@ -20,10 +20,11 @@ export const orderCreatedPayloadSchema = z.object({
   status: z.literal('CREATED'),
 });
 
-export const orderCreatedEventSchema =
-  createEventEnvelopeSchema(orderCreatedPayloadSchema).extend({
-    eventType: z.literal('OrderCreated'),
-  });
+export const orderCreatedEventSchema = createEventEnvelopeSchema(
+  orderCreatedPayloadSchema,
+).extend({
+  eventType: z.literal('OrderCreated'),
+});
 
 export type OrderItem = z.infer<typeof orderItemSchema>;
 export type OrderCreatedPayload = z.infer<typeof orderCreatedPayloadSchema>;
@@ -51,4 +52,3 @@ export function buildOrderCreatedEvent({
     }),
   );
 }
-

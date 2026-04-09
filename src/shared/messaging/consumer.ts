@@ -73,7 +73,9 @@ export class QueueConsumer<TMessage> {
     }
 
     try {
-      const parsedMessage = this.options.parse(extractMessageBody(message.Body));
+      const parsedMessage = this.options.parse(
+        extractMessageBody(message.Body),
+      );
 
       await this.options.handler(parsedMessage, message);
 
