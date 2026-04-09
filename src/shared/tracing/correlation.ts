@@ -14,8 +14,23 @@ function normalizeHeaderValue(value: HeaderValue): string | undefined {
   return value;
 }
 
-export function getRequestId(requestId?: string): string {
-  return requestId ?? createPrefixedId('req');
+export function getRequestId(input?: {
+  requestId?: string;
+  headers?: HeaderBag;
+}): string {
+  if (input?.requestId) {
+    return input.requestId;
+  }
+
+  const headerRequestId = normalizeHeaderValue(
+    input?.headers?.[REQUEST_ID_HEADER],
+  );
+
+  if (headerRequestId) {
+    return headerRequestId;
+  }
+
+  return createPrefixedId('req');
 }
 
 export function getCorrelationId(input?: {
@@ -37,4 +52,3 @@ export function getCorrelationId(input?: {
 
   return input?.requestId ?? createPrefixedId('corr');
 }
-

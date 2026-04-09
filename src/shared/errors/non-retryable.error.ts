@@ -4,4 +4,3 @@ export class NonRetryableError extends Error {
     this.name = 'NonRetryableError';
   }
 }
-

@@ -10,8 +10,8 @@ Hedefler:
 
 * servisleri sorumluluklarına göre ayırmak
 * senkron bağımlılığı azaltmak
-* SQS/SNS mantığını gerçek bir senaryo üzerinde öğrenmek
-* LocalStack ile tamamen local ortamda test edebilmek
+* RabbitMQ ile event-driven mantığını gerçek bir senaryo üzerinde öğrenmek
+* Docker Compose ile tamamen local ortamda test edebilmek
 * projeyi zamanla daha ileri seviye yapılara taşıyabilmek
 
 Demo sınırı:
@@ -48,7 +48,7 @@ API Gateway
   ↓
 Database
   ↓
-SNS Topic: order-events
+RabbitMQ Exchange: order-events
   ↓
 ┌──────────────────────────────────────────────┐
 │ payment-queue                               │
@@ -179,8 +179,8 @@ Bu katman ortak kodların merkezi olur.
 İçeriği:
 
 * event contract’ları
-* AWS client config
-* queue/topic isimleri
+* RabbitMQ connection config
+* exchange/queue isimleri
 * logger
 * tracing/correlation yardımcıları
 * ortak hata tipleri
@@ -191,7 +191,7 @@ Bu katman ortak kodların merkezi olur.
 ```text
 apps/shared/
   events/
-  aws/
+  messaging/
   logger/
   constants/
   utils/
@@ -211,8 +211,8 @@ Temel senaryo `POST /orders` isteğiyle başlar.
 2. `api-gateway` request’i validate eder.
 3. `order-service` siparişi veritabanına yazar.
 4. Sipariş oluşturulduktan sonra `OrderCreated` event’i hazırlanır.
-5. Event, SNS üzerindeki `order-events` topic’ine publish edilir.
-6. SNS bu mesajı ilgili SQS kuyruklarına fan-out eder.
+5. Event, RabbitMQ üzerindeki `order-events` exchange’ine publish edilir.
+6. RabbitMQ bu mesajı ilgili queue’lara fan-out eder.
 7. Her worker kendi kuyruğundan mesajı bağımsız şekilde tüketir.
 8. Başarılı işlenen mesaj queue’dan silinir.
 9. Başarısız mesaj görünmezlik süresi sonunda tekrar denenir.
@@ -222,24 +222,19 @@ Bu yapı sayesinde payment tarafı yavaşlasa bile inventory veya notification a
 
 ---
 
-## 6. Neden SNS + SQS Birlikte?
+## 6. Neden RabbitMQ?
 
-Bu mimaride SNS ve SQS birlikte kullanılmasının nedeni hem **publish/subscribe** hem de **dayanıklı queue processing** ihtiyacını aynı anda çözmektir.
+Bu mimaride RabbitMQ kullanılmasının nedeni hem **publish/subscribe** hem de **dayanıklı queue processing** ihtiyacını tek broker içinde sade şekilde çözmesidir.
 
-### SNS ne sağlar?
+### RabbitMQ ne sağlar?
 
-* tek event’i birden fazla tüketiciye yayma
+* tek event’i birden fazla queue’ya fan-out etme
 * publish eden servisin tüketicileri bilmemesi
-* gevşek bağlı mimari
+* durable queue ve ack/nack ile dayanıklı işleme
+* retry ve DLQ davranışını queue tabanlı modelleme
+* local geliştirmede düşük sürtünme
 
-### SQS ne sağlar?
-
-* mesajların kuyruklanması
-* worker’ların kendi hızında tüketebilmesi
-* retry ve DLQ
-* geçici hata durumlarında dayanıklılık
-
-Bu ikisi birleşince fan-out + bağımsız işleme + hata toleransı elde edilir.
+Bu yaklaşım fan-out + bağımsız işleme + hata toleransı için bu demo scope’unda yeterlidir.
 
 ---
 
@@ -345,7 +340,7 @@ Kontrol edilebilecek şeyler:
 
 * servis ayakta mı
 * database erişimi var mı
-* LocalStack endpoint erişilebilir mi
+* RabbitMQ erişimi var mı
 * queue consumer loop aktif mi
 
 Bu seviyede basit health endpoint yeterlidir. Orchestration veya gelişmiş runtime health stratejileri demo kapsamının dışındadır.
@@ -374,14 +369,14 @@ Başlangıçta tüm yapı localde docker compose ile çalıştırılabilir.
 
 Tipik bileşenler:
 
-* `localstack/localstack:latest`
+* `rabbitmq:3-management`
 * `postgres:16`
 * Node.js servisleri
 
 Yerel geliştirme aşamasında hedef:
 
 * tüm sistemi tek komutla kaldırmak
-* resource’ları init script ile oluşturmak
+* broker topology’sini uygulama başlarken veya publish öncesi oluşturmak
 * worker’ların otomatik ayağa kalkması
 
 Canlı ortam, cloud deployment, autoscaling ve production operasyonları bu dokümanın hedefi değildir.
@@ -396,7 +391,7 @@ Canlı ortam, cloud deployment, autoscaling ve production operasyonları bu dok�
 
 ### Neden shared katmanı var?
 
-Çünkü event contract, logger ve AWS config gibi parçalar servisler arasında ortak ve tutarlı olmalıdır.
+Çünkü event contract, logger ve broker config gibi parçalar servisler arasında ortak ve tutarlı olmalıdır.
 
 ### Neden order-service ayrı düşünülüyor?
 
@@ -418,8 +413,8 @@ Canlı ortam, cloud deployment, autoscaling ve production operasyonları bu dok�
 * `inventory-worker`
 * `notification-worker`
 * `shared`
-* 1 SNS topic
-* 3 SQS queue
+* 1 RabbitMQ exchange
+* 3 queue
 * 3 DLQ
 * PostgreSQL
 

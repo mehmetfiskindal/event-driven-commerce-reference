@@ -6,4 +6,3 @@ export class DuplicateMessageError extends NonRetryableError {
     this.name = 'DuplicateMessageError';
   }
 }
-

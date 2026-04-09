@@ -29,8 +29,8 @@ Temel senaryo:
 1. Client `POST /orders` çağrısı yapar.
 2. API request'i doğrular.
 3. Order verisi veritabanına yazılır.
-4. `OrderCreated` event'i SNS topic'e publish edilir.
-5. SQS üzerinden payment, inventory ve notification worker'ları bu event'i tüketir.
+4. `OrderCreated` event'i RabbitMQ exchange'ine publish edilir.
+5. RabbitMQ üzerinden payment, inventory ve notification worker'ları bu event'i tüketir.
 6. Her worker kendi sonucunu bağımsız üretir.
 
 Bu proje bir ürün değildir.
@@ -69,7 +69,7 @@ Bu demo için çekirdek kapsam:
   * inventory
   * notification
 * PostgreSQL
-* LocalStack
+* RabbitMQ
 * Prisma
 * Zod
 * Swagger
@@ -107,7 +107,7 @@ Bu aşamanın amacı, tekrar kullanılabilir altyapıyı oluşturmaktır.
 ### Yapılacaklar
 
 * environment validation
-* AWS client config
+* RabbitMQ connection config
 * topic/queue constants
 * event envelope yapısı
 * event builder'lar
@@ -116,13 +116,12 @@ Bu aşamanın amacı, tekrar kullanılabilir altyapıyı oluşturmaktır.
 * idempotency helper
 * correlation/request id helper
 * ortak error tipleri
-* Docker ve LocalStack bootstrap
+* Docker ve RabbitMQ bootstrap
 
 ### Beklenen klasörler
 
 ```text
 src/shared/
-  aws/
   config/
   constants/
   errors/
@@ -144,7 +143,7 @@ src/shared/
 
 * config tek bir yerden doğrulanıyor olmalı
 * `OrderCreated` event'i kod tarafında üretilebiliyor olmalı
-* SNS/SQS client oluşturma shared üzerinden yapılmalı
+* RabbitMQ connection ve publish katmanı shared üzerinden yapılmalı
 * shared kodlar business logic içermemeli
 
 ---
@@ -270,7 +269,7 @@ Bu aşamanın amacı, order oluşturma ile event publish arasında bağlantı ku
 
 * `OrderCreated` payload mapping
 * event metadata üretimi
-* SNS publisher entegrasyonu
+* RabbitMQ publisher entegrasyonu
 * publish logları
 * publish başarısız olursa kontrollü hata davranışı
 
@@ -295,7 +294,7 @@ Bu aşamanın amacı, order oluşturma ile event publish arasında bağlantı ku
 
 ### Kabul kriterleri
 
-* başarılı order create sonrası SNS publish denenmeli
+* başarılı order create sonrası RabbitMQ publish denenmeli
 * publish edilen message contract'a uymalı
 * `correlationId` request'ten event'e taşınmalı
 
@@ -308,7 +307,7 @@ Bu aşamanın amacı, ilk asenkron worker'ı ayağa kaldırmaktır.
 ### Yapılacaklar
 
 * payment consumer loop
-* SQS message parse
+* queue message parse
 * `OrderCreated` doğrulama
 * mock payment sonucu üretme
 * `payments` tablosuna yazma

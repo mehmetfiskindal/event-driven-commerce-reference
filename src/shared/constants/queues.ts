@@ -9,4 +9,3 @@ export const DLQ_NAMES = {
   INVENTORY: 'inventory-dlq',
   NOTIFICATION: 'notification-dlq',
 } as const;
-

@@ -22,4 +22,3 @@ describe('buildOrderCreatedEvent', () => {
     expect(event.metadata.idempotencyKey).toBe(event.metadata.eventId);
   });
 });
-

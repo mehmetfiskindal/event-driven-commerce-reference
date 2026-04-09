@@ -1,6 +1,6 @@
 # Event-Driven Commerce Reference
 
-Portfolio-oriented demo project for an event-driven order processing backend built with NestJS, PostgreSQL, LocalStack, SNS, and SQS.
+Portfolio-oriented demo project for an event-driven order processing backend built with NestJS, PostgreSQL, and RabbitMQ.
 
 This repository is intentionally developed as a public showcase project, not as a production product. The goal is to demonstrate architecture thinking, backend fundamentals, async workflows, and clean documentation in a way that is useful for a CV and GitHub portfolio.
 
@@ -18,7 +18,7 @@ Current status:
 This repo is meant to show:
 
 * event-driven backend design
-* SNS + SQS fan-out patterns
+* RabbitMQ fan-out patterns
 * async order processing
 * retry and DLQ thinking
 * idempotent consumer design
@@ -41,14 +41,14 @@ When a user creates an order:
 
 1. API accepts `POST /orders`
 2. Order data is validated and persisted
-3. `OrderCreated` is published to SNS
-4. SNS fans out to SQS queues
+3. `OrderCreated` is published to RabbitMQ
+4. RabbitMQ fans out to worker queues
 5. Payment, inventory, and notification workers consume independently
 
 ```text
 Client → API Gateway → Database
                     ↓
-               SNS Topic (order-events)
+            RabbitMQ Exchange (order-events)
                     ↓
      ┌──────────────┼──────────────┐
      ↓              ↓              ↓
@@ -65,8 +65,8 @@ Payment Queue   Inventory Queue   Notification Queue
 * Zod
 * Swagger / OpenAPI
 * PostgreSQL
-* AWS SDK v3
-* LocalStack
+* RabbitMQ
+* amqplib
 * Docker Compose
 
 ## Repository Docs
@@ -107,12 +107,14 @@ This starts:
 
 * Nest app container
 * PostgreSQL
-* LocalStack
+* RabbitMQ
 
-LocalStack automatically creates:
+The Nest app asserts the messaging topology on publish:
 
-* SNS topic `order-events`
-* SQS queues `payment-queue`, `inventory-queue`, `notification-queue`
+* fanout exchange `order-events`
+* queues `payment-queue`, `inventory-queue`, `notification-queue`
+
+RabbitMQ management UI is available at `http://localhost:15672`.
 
 ### Start Locally Without Docker For The App
 
@@ -144,8 +146,8 @@ Next:
 
 | This repo intentionally includes | This repo intentionally does not include |
 | --- | --- |
-| local-first setup with Docker + LocalStack | production deployment pipeline |
-| documented SNS/SQS event flow | cloud hardening and runtime operations |
+| local-first setup with Docker + RabbitMQ | production deployment pipeline |
+| documented RabbitMQ event flow | cloud hardening and runtime operations |
 | simplified order, payment, inventory, notification demo flow | real payment providers or real commerce integrations |
 | Prisma, Zod, Swagger, and clean backend structure | enterprise schema governance or contract registry tooling |
 | basic retry, DLQ, and idempotency concepts | full replay tooling, operations dashboards, or runbooks |

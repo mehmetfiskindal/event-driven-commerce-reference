@@ -11,18 +11,15 @@ services:
       NODE_ENV: development
       PORT: 3000
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/fiecommerce
-      AWS_REGION: eu-central-1
-      AWS_ENDPOINT_URL: http://localstack:4566
-      AWS_ACCESS_KEY_ID: test
-      AWS_SECRET_ACCESS_KEY: test
-      SNS_ORDER_EVENTS_TOPIC_ARN: arn:aws:sns:eu-central-1:000000000000:order-events
-      SQS_PAYMENT_QUEUE_URL: http://localstack:4566/000000000000/payment-queue
-      SQS_INVENTORY_QUEUE_URL: http://localstack:4566/000000000000/inventory-queue
-      SQS_NOTIFICATION_QUEUE_URL: http://localstack:4566/000000000000/notification-queue
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      RABBITMQ_ORDER_EVENTS_EXCHANGE: order-events
+      RABBITMQ_PAYMENT_QUEUE: payment-queue
+      RABBITMQ_INVENTORY_QUEUE: inventory-queue
+      RABBITMQ_NOTIFICATION_QUEUE: notification-queue
     depends_on:
       postgres:
         condition: service_healthy
-      localstack:
+      rabbitmq:
         condition: service_healthy
     volumes:
       - .:/app
@@ -45,25 +42,17 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  localstack:
-    image: localstack/localstack:latest
-    container_name: fiecommerce-localstack
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: fiecommerce-rabbitmq
     ports:
-      - '4566:4566'
-    environment:
-      SERVICES: sns,sqs
-      DEBUG: '1'
-      AWS_DEFAULT_REGION: eu-central-1
+      - '5672:5672'
+      - '15672:15672'
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:4566/_localstack/health']
+      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
       interval: 5s
       timeout: 5s
       retries: 20
-    volumes:
-      - './infra/localstack/init:/etc/localstack/init/ready.d'
-      - localstack-data:/var/lib/localstack
 
 volumes:
   postgres-data:
-  localstack-data:
-

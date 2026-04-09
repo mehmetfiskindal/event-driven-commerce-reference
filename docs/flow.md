@@ -23,8 +23,8 @@ Sistemin temel akışı şu şekildedir:
 2. API Gateway isteği alır ve doğrular.
 3. Order Service siparişi veritabanına kaydeder.
 4. `OrderCreated` event’i oluşturulur.
-5. Event, SNS topic’e publish edilir.
-6. SNS event’i ilgili SQS kuyruklarına fan-out eder.
+5. Event, RabbitMQ exchange’ine publish edilir.
+6. RabbitMQ event’i ilgili queue’lara fan-out eder.
 7. Worker servisler kendi kuyruklarından mesajı tüketir.
 8. Her worker kendi iş mantığını bağımsız yürütür.
 9. Başarılı mesaj kuyruktan silinir.
@@ -138,21 +138,21 @@ Bu event, sistemin geri kalan parçaları için tetikleyici görevi görür.
 
 ---
 
-### Adım 5 — Event SNS topic’e publish edilir
+### Adım 5 — Event RabbitMQ exchange’ine publish edilir
 
 Hazırlanan event şu topic’e gönderilir:
 
 * `order-events`
 
-Burada producer yalnızca topic’e mesaj bırakır. Payment veya inventory servisinin iç detaylarını bilmez.
+Burada producer yalnızca exchange’e mesaj bırakır. Payment veya inventory servisinin iç detaylarını bilmez.
 
 Bu noktada gevşek bağlı mimari elde edilir.
 
 ---
 
-### Adım 6 — SNS fan-out yapar
+### Adım 6 — RabbitMQ fan-out yapar
 
-SNS, gelen `OrderCreated` event’ini abone olan kuyruklara dağıtır.
+RabbitMQ, gelen `OrderCreated` event’ini bağlı kuyruklara dağıtır.
 
 Örnek kuyruklar:
 
@@ -434,7 +434,7 @@ Order Service
   │ save order to DB
   │ create OrderCreated event
   ▼
-SNS: order-events
+RabbitMQ: order-events
   ├──────────────► payment-queue ─────► payment-worker
   ├──────────────► inventory-queue ───► inventory-worker
   └──────────────► notification-queue ► notification-worker

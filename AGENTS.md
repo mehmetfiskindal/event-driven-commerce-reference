@@ -8,8 +8,8 @@ Core flow:
 
 1. Client calls `POST /orders`
 2. API validates and persists the order
-3. `OrderCreated` is published to SNS
-4. SQS fans out to worker queues
+3. `OrderCreated` is published to RabbitMQ
+4. RabbitMQ fan-out routes the event to worker queues
 5. Payment, inventory, and notification workers process independently
 
 The system is intentionally limited to demo and portfolio scope. It should optimize for clarity, learning value, readability, and incremental delivery rather than product completeness.
@@ -38,7 +38,7 @@ Current codebase state:
 
 * single NestJS app scaffold in `src/`
 * documentation describes a future monorepo-style service split under `apps/`
-* Prisma, Zod, Swagger, Nest config, and AWS SDK v3 dependencies are installed
+* Prisma, Zod, Swagger, Nest config, and RabbitMQ client dependencies are installed
 * the multi-service runtime is not implemented yet
 
 Interpretation:
@@ -60,8 +60,8 @@ Use these defaults unless the user asks otherwise:
 * API docs: `@nestjs/swagger`
 * Database: PostgreSQL first, SQLite only for fast local prototyping
 * ORM: Prisma
-* Messaging: AWS SNS + SQS via AWS SDK v3
-* Local infrastructure: LocalStack
+* Messaging: RabbitMQ via AMQP
+* Local infrastructure: Docker Compose with PostgreSQL and RabbitMQ
 
 Use these as demo defaults, not as claims of production readiness.
 
@@ -71,7 +71,7 @@ Examples to avoid by default:
 
 * `class-validator` / `class-transformer` DTO validation path
 * TypeORM in parallel with Prisma
-* Kafka or RabbitMQ unless explicitly requested
+* Kafka or a second broker stack unless explicitly requested
 * advanced platform tooling added only for appearance
 
 ---
@@ -223,10 +223,10 @@ Outbox-style tables are optional and should not be treated as mandatory for this
 
 ## Messaging Rules
 
-When implementing SNS/SQS integration:
+When implementing RabbitMQ integration:
 
-* keep topic and queue names centralized
-* isolate AWS client creation in a shared messaging module
+* keep exchange and queue names centralized
+* isolate connection and channel creation in a shared messaging module
 * deserialize and validate every consumed message
 * check `eventType` and `eventVersion` before handling
 * record processed events to prevent duplicate handling

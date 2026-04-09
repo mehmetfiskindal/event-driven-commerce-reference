@@ -6,16 +6,19 @@ export interface ProcessedMessageStore {
 export class InMemoryProcessedMessageStore implements ProcessedMessageStore {
   private readonly processedMessages = new Set<string>();
 
-  async has(messageId: string, consumerName: string): Promise<boolean> {
-    return this.processedMessages.has(this.toKey(messageId, consumerName));
+  has(messageId: string, consumerName: string): Promise<boolean> {
+    return Promise.resolve(
+      this.processedMessages.has(this.toKey(messageId, consumerName)),
+    );
   }
 
-  async save(messageId: string, consumerName: string): Promise<void> {
+  save(messageId: string, consumerName: string): Promise<void> {
     this.processedMessages.add(this.toKey(messageId, consumerName));
+
+    return Promise.resolve();
   }
 
   private toKey(messageId: string, consumerName: string): string {
     return `${consumerName}:${messageId}`;
   }
 }
-

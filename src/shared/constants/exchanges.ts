@@ -1,4 +1,3 @@
-export const TOPIC_NAMES = {
+export const EXCHANGE_NAMES = {
   ORDER_EVENTS: 'order-events',
 } as const;
-

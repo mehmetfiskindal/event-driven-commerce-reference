@@ -62,4 +62,3 @@ export function createLogger(context: string) {
 }
 
 export type AppLogger = ReturnType<typeof createLogger>;
-
