@@ -8,11 +8,11 @@ This repository is a public portfolio/demo project. The goal is to keep it techn
 
 Read these files first:
 
-* [README.md](/home/mehmetfiskindal/fiecommerce/README.md)
-* [AGENTS.md](/home/mehmetfiskindal/fiecommerce/AGENTS.md)
-* [docs/arch.md](/home/mehmetfiskindal/fiecommerce/docs/arch.md)
-* [docs/event-contracts.md](/home/mehmetfiskindal/fiecommerce/docs/event-contracts.md)
-* [docs/database.md](/home/mehmetfiskindal/fiecommerce/docs/database.md)
+* [README.md](README.md)
+* [AGENTS.md](AGENTS.md)
+* [docs/arch.md](docs/arch.md)
+* [docs/event-contracts.md](docs/event-contracts.md)
+* [docs/database.md](docs/database.md)
 
 ## Contribution Principles
 

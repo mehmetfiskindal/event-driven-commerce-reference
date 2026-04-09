@@ -20,11 +20,11 @@ The system is intentionally limited to demo and portfolio scope. It should optim
 
 Before changing architecture or domain behavior, read these files:
 
-* [README.md](/home/mehmetfiskindal/fiecommerce/README.md)
-* [docs/arch.md](/home/mehmetfiskindal/fiecommerce/docs/arch.md)
-* [docs/flow.md](/home/mehmetfiskindal/fiecommerce/docs/flow.md)
-* [docs/event-contracts.md](/home/mehmetfiskindal/fiecommerce/docs/event-contracts.md)
-* [docs/database.md](/home/mehmetfiskindal/fiecommerce/docs/database.md)
+* [README.md](README.md)
+* [docs/arch.md](docs/arch.md)
+* [docs/flow.md](docs/flow.md)
+* [docs/event-contracts.md](docs/event-contracts.md)
+* [docs/database.md](docs/database.md)
 
 If code and docs conflict, prefer keeping behavior aligned with the docs unless the user explicitly asks to evolve the design.
 

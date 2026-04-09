@@ -73,12 +73,12 @@ Payment Queue   Inventory Queue   Notification Queue
 
 Project decisions are documented here:
 
-* [Architecture](/home/mehmetfiskindal/fiecommerce/docs/arch.md)
-* [Flow](/home/mehmetfiskindal/fiecommerce/docs/flow.md)
-* [Event Contracts](/home/mehmetfiskindal/fiecommerce/docs/event-contracts.md)
-* [Database](/home/mehmetfiskindal/fiecommerce/docs/database.md)
-* [Project Plan](/home/mehmetfiskindal/fiecommerce/docs/firstplan.md)
-* [Agent Guidance](/home/mehmetfiskindal/fiecommerce/AGENTS.md)
+* [Architecture](docs/arch.md)
+* [Flow](docs/flow.md)
+* [Event Contracts](docs/event-contracts.md)
+* [Database](docs/database.md)
+* [Project Plan](docs/firstplan.md)
+* [Agent Guidance](AGENTS.md)
 
 ## Local Development
 
@@ -169,13 +169,13 @@ Contributions are welcome, but keep the repo scope aligned with its purpose: a c
 
 Before making larger changes, read:
 
-* [AGENTS.md](/home/mehmetfiskindal/fiecommerce/AGENTS.md)
-* [CONTRIBUTING.md](/home/mehmetfiskindal/fiecommerce/CONTRIBUTING.md)
+* [AGENTS.md](AGENTS.md)
+* [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Security
 
-This repo is not meant for production deployment. See [SECURITY.md](/home/mehmetfiskindal/fiecommerce/SECURITY.md) for reporting guidance and scope.
+This repo is not meant for production deployment. See [SECURITY.md](SECURITY.md) for reporting guidance and scope.
 
 ## License
 
-MIT. See [LICENSE](/home/mehmetfiskindal/fiecommerce/LICENSE).
+MIT. See [LICENSE](LICENSE).
