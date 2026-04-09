@@ -1,0 +1,69 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fiecommerce-api
+    command: npm run start:dev
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/fiecommerce
+      AWS_REGION: eu-central-1
+      AWS_ENDPOINT_URL: http://localstack:4566
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      SNS_ORDER_EVENTS_TOPIC_ARN: arn:aws:sns:eu-central-1:000000000000:order-events
+      SQS_PAYMENT_QUEUE_URL: http://localstack:4566/000000000000/payment-queue
+      SQS_INVENTORY_QUEUE_URL: http://localstack:4566/000000000000/inventory-queue
+      SQS_NOTIFICATION_QUEUE_URL: http://localstack:4566/000000000000/notification-queue
+    depends_on:
+      postgres:
+        condition: service_healthy
+      localstack:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: fiecommerce-postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: fiecommerce
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d fiecommerce']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  localstack:
+    image: localstack/localstack:latest
+    container_name: fiecommerce-localstack
+    ports:
+      - '4566:4566'
+    environment:
+      SERVICES: sns,sqs
+      DEBUG: '1'
+      AWS_DEFAULT_REGION: eu-central-1
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:4566/_localstack/health']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - './infra/localstack/init:/etc/localstack/init/ready.d'
+      - localstack-data:/var/lib/localstack
+
+volumes:
+  postgres-data:
+  localstack-data:
+
