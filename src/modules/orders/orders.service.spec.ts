@@ -1,5 +1,5 @@
 import { ServiceUnavailableException } from '@nestjs/common';
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus } from '../../generated/prisma/client.js';
 import type { OrderCreatedEvent } from '../../shared/events/order-created.event';
 import { OrderEventsPublisher } from '../messaging/order-events.publisher';
 import { type CreateOrderRecord, OrdersRepository } from './orders.repository';

@@ -1,10 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum OrderStatus {
@@ -49,12 +50,12 @@ model OrderItem {
 }
 
 model ProcessedEvent {
-  id           BigInt   @id @default(autoincrement())
-  eventId      String   @map("event_id") @db.VarChar(64)
-  eventType    String   @map("event_type") @db.VarChar(64)
-  consumerName String   @map("consumer_name") @db.VarChar(64)
-  correlationId String? @map("correlation_id") @db.VarChar(64)
-  processedAt  DateTime @default(now()) @map("processed_at") @db.Timestamptz(6)
+  id            BigInt   @id @default(autoincrement())
+  eventId       String   @map("event_id") @db.VarChar(64)
+  eventType     String   @map("event_type") @db.VarChar(64)
+  consumerName  String   @map("consumer_name") @db.VarChar(64)
+  correlationId String?  @map("correlation_id") @db.VarChar(64)
+  processedAt   DateTime @default(now()) @map("processed_at") @db.Timestamptz(6)
 
   @@unique([eventId, consumerName], map: "processed_events_event_id_consumer_name_key")
   @@index([eventId, consumerName], map: "idx_processed_events_event_id_consumer_name")

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { OrderStatus, Prisma } from '@prisma/client';
+import { OrderStatus, Prisma } from '../../generated/prisma/client.js';
 import { PrismaService } from '../database/prisma.service';
 import type { CreateOrderRequest } from './orders.types';
 

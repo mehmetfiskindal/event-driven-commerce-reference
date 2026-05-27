@@ -1,5 +1,5 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus } from '../../generated/prisma/client.js';
 import { buildOrderCreatedEvent } from '../../shared/events/order-created.event';
 import { createLogger } from '../../shared/logger/logger';
 import { createPrefixedId } from '../../shared/utils/id';
